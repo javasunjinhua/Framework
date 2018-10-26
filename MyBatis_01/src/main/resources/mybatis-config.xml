@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="db.properties" />
+    <settings>
+        <!-- 开启二级缓存的支持 -->
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+    <typeAliases>
+        <!-- 配置单个别名 -->
+        <typeAlias alias="user" type="com.bigdata.domain.User" />
+        <!-- 给整个包下所有的JavaBean配置别名 -->
+      <!--  <package name="com.bigdata.domain" />-->
+    </typeAliases>
+
+    <environments default="development">
+        <!-- 配置环境 -->
+        <environment id="development">
+            <!-- 配置事务,使用JDBC -->
+            <transactionManager type="JDBC" />
+            <!-- 配置连接池,POOLED表示使用MyBatis自带的连接池(以后进行框架整合我们使用Druid) -->
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}" />
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}" />
+                <property name="password" value="${jdbc.password}" />
+            </dataSource>
+        </environment>
+    </environments>
+    <!-- 配置映射文件的位置 -->
+    <mappers>
+      <!-- <mapper resource="com/bigdata/dao/UserDAO.xml" />-->
+        <mapper class="com.bigdata.dao.IUserDAO"></mapper>
+
+    </mappers>
+</configuration>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace表示名称空间,用来隔离sql语句的,也就是namespace+id可以唯一确定一条sql语句
+    namespace一般写接口的全限定名
+-->
+<mapper namespace="com.bigdata.dao.IUserDAO">
+    <cache></cache>
+    <insert id="save" parameterType="com.bigdata.domain.User">
+        insert into t_user(id,name,salary) values(null,#{name},#{salary});
+    </insert>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        delete from  t_user where id=#{id}
+    </delete>
+
+
+    <!-- <update id="update" parameterType="com.bigdata.domain.User">
+         update t_user set name=#{name} ,salary=#{salary}  where id=#{id}
+     </update>
+    -->
+    <!-- <update id="update">
+         update t_user
+         <set>
+             <if test="name!=null and name!=''">
+                 name=#{name},
+             </if>
+             <if test="salary!=null and salary!=''">
+                  salary=#{salary},
+             </if>
+         </set>
+          where id=#{id}
+     </update>
+     -->
+    <update id="update">
+        update t_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name!=null and name!=''">
+                name=#{name},
+            </if>
+            <if test="salary!=null and salary!=''">
+                salary=#{salary},
+            </if>
+        </trim>
+        where id=#{id}
+    </update>
+
+
+    <select id="selectone" parameterType="java.lang.Long" resultType="com.bigdata.domain.User" useCache="true">
+      select id, name,salary from t_user where id=#{id}
+     </select>
+
+    <!--●使用resultMap-->
+    <resultMap id="userMap" type="user">
+        <id column="uid" property="id"/>
+        <result column="uname" property="name"/>
+        <result column="usalary" property="salary"/>
+    </resultMap>
+
+    <!--<select id="selectone" resultMap="userMap">
+     select uid, uname,usalary from t_user where uid=#{id}
+    </select>
+-->
+
+    <!--<select id="getAll" resultType="com.bigdata.domain.User">
+      select id,name,salary from t_user
+    </select>-->
+
+    <select id="getAll" resultType="com.bigdata.domain.User">
+      select uid id, uname name,usalary salary from t_user
+    </select>
+
+
+    <select id="getCount" resultType="java.lang.Long">
+        select count(*) from t_user
+    </select>
+
+
+    <select id="getMap" resultType="Map">
+         select id,name,salary from t_user
+    </select>
+
+    <select id="findByName" resultType="user">
+         select id,salary ,name from t_user where name like #{name}
+    </select>
+
+
+    <!-- <select id="findByUser" resultType="user">
+           select id,salary ,name from t_user where 1=1
+           <if test="name!=null and name!=' '">
+               and name=#{name}
+           </if>
+         <if test="salary!=null ">
+             and salary=#{salary}
+
+         </if>
+
+     </select>
+     -->
+    <!--<select id="findByUser" resultType="user">
+        select id,salary ,name from t_user where 1=1
+        <choose>
+        <when test="name!=null and name!=' '">
+            and name=#{name}
+        </when>
+        <when test="salary!=null ">
+            and salary=#{salary}
+        </when>
+            <otherwise>
+                 and id=5
+            </otherwise>
+        </choose>
+    </select>
+    -->
+    <select id="findByUser" resultType="user">
+        select id,salary ,name from t_user
+        <where>
+            <if test="name!=null and name!=' '">
+                and name=#{name}
+            </if>
+            <if test="salary!=null ">
+                and salary=#{salary}
+            </if>
+        </where>
+    </select>
+    <sql id="sqlselect">
+         select id,name,salary from t_user where id in
+    </sql>
+
+
+    <select id="findById" resultType="user">
+      <include refid="sqlselect"></include>
+        <foreach item="item"  collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="findByIdArry" resultType="user">
+        <include refid="sqlselect"></include>
+        <foreach item="item"  collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <select id="findByNameAndSalary" resultType="user">
+        select id,name,salary from t_user where name=#{name} and salary=#{salary}
+    </select>
+
+
+</mapper>
